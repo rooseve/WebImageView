@@ -23,61 +23,64 @@ import com.rsv.utils.StorageUtils;
  */
 public class ImageLoader {
 
-	private static final HashMap<String, ImageLoader> pool = new HashMap<String, ImageLoader>();
+	private static final HashMap<Context, ImageLoader> pool = new HashMap<Context, ImageLoader>();
 
-	private static final String InterCachePostTag = "_rsv_imgcache";
+	private final LmtSpaceFileCache fileCache;
 
-	private LmtSpaceFileCache fileCache = null;
+	private final LmtSizeMemCache<Bitmap> memCache;
 
-	private LmtSizeMemCache<Bitmap> memCache = null;
+	private final String userAgent;
 
-	private String userAgent;
+	public synchronized static ImageLoader getImageLoader(final Context cxt) throws Exception {
 
-	public static ImageLoader getImageLoader(final Context context) throws Exception {
+		final Context appContext = cxt.getApplicationContext();
 
-		return getImageLoader(context, ConfigReader.getWebImgCacheDir(context));
+		ImageLoader obj = pool.get(appContext);
 
-	}
-
-	private synchronized static ImageLoader getImageLoader(final Context context, String subdir)
-			throws Exception {
-
-		File cacheDir;
-
-		if (StorageUtils.isExternalStorageWritable()) {
-
-			cacheDir = StorageUtils.getExternalCacheDirectory(context.getApplicationContext()
-					.getPackageName(), subdir);
-
-		} else {
-
-			// throw new Exception("ExternalStorage is not writable");
-
-			cacheDir = new File(context.getApplicationContext().getCacheDir(), subdir
-					+ InterCachePostTag);
-		}
-
-		if (!cacheDir.exists()) {
-			cacheDir.mkdirs();
-		}
-
-		String dir = cacheDir.getAbsolutePath();
-		String ck = String.format("%s", dir);
-
-		ImageLoader obj = pool.get(ck);
 		if (obj == null) {
 
-			obj = new ImageLoader(context, dir);
-			pool.put(ck, obj);
+			String subdir = ConfigReader.getImageCacheDir(appContext);
+
+			File cacheDir;
+
+			switch (ConfigReader.getImageCacheStorage(appContext)) {
+
+				case INTERNAL:
+					cacheDir = new File(appContext.getApplicationContext().getCacheDir(), subdir);
+					break;
+
+				default:
+					if (StorageUtils.isExternalStorageWritable()) {
+
+						cacheDir = StorageUtils.getExternalCacheDirectory(appContext
+								.getApplicationContext().getPackageName(), subdir);
+
+					} else {
+						throw new Exception("ExternalStorage is not writable");
+					}
+			}
+
+			if (!cacheDir.exists()) {
+				cacheDir.mkdirs();
+			}
+
+			if (!cacheDir.canWrite()) {
+				throw new Exception("WebImageCache dir is not writable: "
+						+ cacheDir.getCanonicalPath());
+			}
+
+			obj = new ImageLoader(appContext, cacheDir.getCanonicalPath());
+
+			pool.put(appContext, obj);
 
 		}
 		return obj;
+
 	}
 
-	private ImageLoader(final Context context, String dir) {
+	private ImageLoader(final Context context, final String dir) {
 
-		int cacheSpace = dir.endsWith(InterCachePostTag) ? 5 : ConfigReader
-				.getFileCacheSpaceInMB(context);
+		int cacheSpace = ConfigReader.getImageCacheSpaceInMB(context);
 
 		fileCache = new LmtSpaceFileCache(new File(dir), cacheSpace * 1024 * 1024);
 
@@ -98,17 +101,30 @@ public class ImageLoader {
 		return bm;
 	}
 
-	public void clearMemcache()
-	{
+	/**
+	 * Clear from memory
+	 */
+	public void clearMemcache() {
 		this.memCache.clear();
 	}
-	
-	public void clearFilecache()
-	{
+
+	/**
+	 * Clear file cache
+	 * 
+	 */
+	public void clearFilecache() {
 		this.fileCache.clear();
 	}
-	
-	public Bitmap loadImg(final String url, final IProgressListener downloadProgressListener)
+
+	/**
+	 * Download an image to the file cache dir
+	 * 
+	 * @param url
+	 * @param downloadProgressListener
+	 * @return
+	 * @throws IOException
+	 */
+	public Bitmap downloadImg(final String url, final IProgressListener downloadProgressListener)
 			throws IOException {
 
 		Bitmap bm = this.loadImgFromMem(url);

@@ -1,4 +1,4 @@
-package com.rsv.example;
+package com.rsv.widget.example;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -9,7 +9,7 @@ import android.widget.TextView;
 
 import com.rsv.widget.R;
 import com.rsv.widget.WebImageView;
-import com.rsv.widget.webimageview.ImageLoadListener;
+import com.rsv.widget.WebImageView.WebImageProgressListener;
 
 public class ItemAdapter extends ArrayAdapter<String> {
 
@@ -53,7 +53,7 @@ public class ItemAdapter extends ArrayAdapter<String> {
 
 		textView.setText(".");
 
-		wImageView.setImgLoadListener(new ImageLoadListener() {
+		wImageView.setImgLoadListener(new WebImageProgressListener() {
 
 			@Override
 			public void onLoading(WebImageView v, final int progress) {

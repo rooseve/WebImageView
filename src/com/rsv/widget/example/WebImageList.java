@@ -1,4 +1,4 @@
-package com.rsv.example;
+package com.rsv.widget.example;
 
 import java.util.Random;
 
@@ -19,8 +19,8 @@ public class WebImageList extends Activity {
 		setContentView(R.layout.imglist);
 
 		try {
-			ImageLoader imageLoader = ImageLoader.getImageLoader(this.getApplicationContext());
-			imageLoader.clearFilecache();
+			//ImageLoader imageLoader = ImageLoader.getImageLoader(this.getApplicationContext());
+			//imageLoader.clearFilecache();
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -47,6 +47,7 @@ public class WebImageList extends Activity {
 		listView.setAdapter(adapter);
 	}
 
+	@SuppressWarnings("unused")
 	private static String getRandomStr(int len) {
 		char[] chars = "abcdefghijklmnopqrstuvwxyz1234567890".toCharArray();
 		StringBuilder sb = new StringBuilder();

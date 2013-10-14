@@ -1,11 +1,9 @@
 package com.rsv.widget;
 
-import java.io.IOException;
 import java.lang.ref.WeakReference;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -18,7 +16,6 @@ import android.widget.ImageView;
 import com.rsv.comp.IProgressListener;
 import com.rsv.comp.ImageLoader;
 import com.rsv.utils.LogUtils;
-import com.rsv.widget.webimageview.ImageLoadListener;
 
 public class WebImageView extends ImageView {
 
@@ -31,9 +28,9 @@ public class WebImageView extends ImageView {
 
 	private long progress = -1;
 
-	private ImageLoadListener userImgLoadListener;
+	private WebImageProgressListener userImgLoadListener;
 
-	private ImageLoadListener internImgLoadListener = new ImageLoadListener() {
+	private WebImageProgressListener internImgLoadListener = new WebImageProgressListener() {
 
 		@Override
 		public void onError(WebImageView v, Exception e) {
@@ -93,18 +90,16 @@ public class WebImageView extends ImageView {
 		if (attrs == null)
 			return;
 
-		TypedArray wAttrs = context.obtainStyledAttributes(attrs, R.styleable.WebImageView);
-
-		String url = wAttrs.getString(R.styleable.WebImageView_webImageUrl);
+		String url = attrs.getAttributeValue("http://schemas.android.com/apk/res-auto",
+				"webImageUrl");
 
 		if (url != null) {
 			this.setWebImageUrl(url);
 		}
 
-		wAttrs.recycle();
 	}
 
-	public void setImgLoadListener(ImageLoadListener imgLoadListener) {
+	public void setImgLoadListener(WebImageProgressListener imgLoadListener) {
 		this.userImgLoadListener = imgLoadListener;
 	}
 
@@ -238,9 +233,6 @@ public class WebImageView extends ImageView {
 		 * the app life cycle
 		 */
 		private final WeakReference<WebImageView> imageViewReference;
-
-		private ImageLoader imgLoader;
-
 		private long lastp = 0;
 
 		private long lastTime = 0;
@@ -250,7 +242,6 @@ public class WebImageView extends ImageView {
 		private RetrieveImageTask(final WebImageView imageView) throws Exception {
 			this.imageViewReference = new WeakReference<WebImageView>(imageView);
 
-			imgLoader = ImageLoader.getImageLoader(imageView.getContext());
 		}
 
 		private void tryCancel() {
@@ -293,9 +284,11 @@ public class WebImageView extends ImageView {
 
 				try {
 
-					//LogUtils.v(this, "Load " + imageView.webImageUrl);
+					// LogUtils.v(this, "Load " + imageView.webImageUrl);
 
-					return imgLoader.loadImg(imageView.webImageUrl, new IProgressListener() {
+					ImageLoader imgLoader = ImageLoader.getImageLoader(imageView.getContext());
+
+					return imgLoader.downloadImg(imageView.webImageUrl, new IProgressListener() {
 
 						@Override
 						public void reportProgress(long progress) {
@@ -316,8 +309,7 @@ public class WebImageView extends ImageView {
 						}
 					});
 
-				} catch (IOException e) {
-
+				} catch (Exception e) {
 					bgExp = e;
 
 					return null;
@@ -351,5 +343,29 @@ public class WebImageView extends ImageView {
 			this.clearRef();
 		}
 	};
+
+	public interface WebImageProgressListener {
+
+		public void onStart(final WebImageView v);
+
+		/**
+		 * Web image loading
+		 * 
+		 * @param v
+		 * @param progress
+		 *            0~100
+		 */
+		public void onLoading(final WebImageView v, final int progress);
+
+		/**
+		 * Web image loaded
+		 * 
+		 * @param v
+		 */
+		public void onLoad(final WebImageView v);
+
+		public void onError(final WebImageView v, Exception e);
+
+	}
 
 }
