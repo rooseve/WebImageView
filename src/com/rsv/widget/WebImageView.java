@@ -17,6 +17,10 @@ import com.rsv.comp.IProgressListener;
 import com.rsv.comp.ImageLoader;
 import com.rsv.utils.LogUtils;
 
+/**
+ * ImageView but load from an url
+ * 
+ */
 public class WebImageView extends ImageView {
 
 	/**
@@ -24,10 +28,19 @@ public class WebImageView extends ImageView {
 	 */
 	private RetrieveImageTask task;
 
+	/**
+	 * The image url
+	 */
 	private String webImageUrl;
 
+	/**
+	 * The loading progress, 0~100
+	 */
 	private long progress = -1;
 
+	/**
+	 * The outer side listener
+	 */
 	private WebImageProgressListener userImgLoadListener;
 
 	private WebImageProgressListener internImgLoadListener = new WebImageProgressListener() {
@@ -65,10 +78,13 @@ public class WebImageView extends ImageView {
 		}
 	};
 
-	protected Handler handler = new Handler();
-
 	private Runnable runBgTask = null;
 
+	private Handler handler = new Handler();
+
+	/**
+	 * The image placeholder
+	 */
 	protected Drawable webImagePlaceholder;
 
 	public WebImageView(Context context) {
@@ -86,6 +102,12 @@ public class WebImageView extends ImageView {
 		loadAttrs(context, attrs);
 	}
 
+	/**
+	 * Load some custom attrs, like webImageUrl
+	 * 
+	 * @param context
+	 * @param attrs
+	 */
 	private void loadAttrs(Context context, AttributeSet attrs) {
 		if (attrs == null)
 			return;
@@ -96,22 +118,39 @@ public class WebImageView extends ImageView {
 		if (url != null) {
 			this.setWebImageUrl(url);
 		}
-
 	}
 
-	public void setImgLoadListener(WebImageProgressListener imgLoadListener) {
+	/**
+	 * Listen for the image loading progress
+	 */
+	public void setWebImageProgressListener(final WebImageProgressListener imgLoadListener) {
 		this.userImgLoadListener = imgLoadListener;
 	}
 
-	public void setPlaceholder(Drawable placeholder) {
+	/**
+	 * Set web image placeholder, which will showed before the real image loaded
+	 * 
+	 * @param placeholder
+	 */
+	public void setWebImagePlaceholder(final Drawable placeholder) {
 		this.webImagePlaceholder = placeholder;
 	}
 
-	public void setPlaceholder(Bitmap placeholder) {
+	/**
+	 * Set web image placeholder, which will showed before the real image loaded
+	 * 
+	 * @param placeholder
+	 */
+	public void setWebImagePlaceholder(final Bitmap placeholder) {
 		this.webImagePlaceholder = new BitmapDrawable(this.getContext().getResources(), placeholder);
 	}
 
-	public void setPlaceholder(int resouceId) {
+	/**
+	 * Set web image placeholder, which will showed before the real image loaded
+	 * 
+	 * @param placeholder
+	 */
+	public void setWebImagePlaceholder(int resouceId) {
 		this.webImagePlaceholder = this.getContext().getResources().getDrawable(resouceId);
 	}
 
@@ -123,10 +162,19 @@ public class WebImageView extends ImageView {
 		}
 	}
 
-	public String getImageUrl() {
+	/**
+	 * 
+	 * @return the web image url
+	 */
+	public String getWebImageUrl() {
 		return this.webImageUrl;
 	}
 
+	/**
+	 * Set the webimage url
+	 * 
+	 * @param url
+	 */
 	public void setWebImageUrl(final String url) {
 
 		if (url != null && url.equals(this.webImageUrl)) {
@@ -140,25 +188,26 @@ public class WebImageView extends ImageView {
 
 		if (task != null) {
 			task.tryCancel();
-			this.disconnectImageTask();
+			this.disconnectWebImageTask();
 		}
 
 		this.webImageUrl = url;
 
 		this.fillPlaceholder();
 
-		if (this.webImageUrl == null)
-			return;
-
 		if (runBgTask != null) {
 			handler.removeCallbacks(runBgTask);
 		}
+
+		if (this.webImageUrl == null)
+			return;
 
 		runBgTask = new Runnable() {
 
 			@SuppressLint("NewApi")
 			@Override
 			public void run() {
+
 				try {
 					task = new RetrieveImageTask(WebImageView.this);
 
@@ -179,8 +228,8 @@ public class WebImageView extends ImageView {
 			}
 		};
 
-		handler.post(runBgTask);
-
+		// delayed a little, as the View might be adjust many times
+		handler.postDelayed(runBgTask, 10);
 	}
 
 	/**
@@ -188,7 +237,7 @@ public class WebImageView extends ImageView {
 	 * 
 	 * @param bm
 	 */
-	private void setWebImageBitmap(Bitmap bm, Exception e) {
+	private void setWebImageBitmap(final Bitmap bm, final Exception e) {
 
 		if (bm == null) {
 
@@ -218,7 +267,7 @@ public class WebImageView extends ImageView {
 
 	}
 
-	public void disconnectImageTask() {
+	private void disconnectWebImageTask() {
 		task = null;
 	}
 
@@ -233,9 +282,16 @@ public class WebImageView extends ImageView {
 		 * the app life cycle
 		 */
 		private final WeakReference<WebImageView> imageViewReference;
-		private long lastp = 0;
 
-		private long lastTime = 0;
+		/**
+		 * the last reported progress
+		 */
+		private long lastReportedProgress = 0;
+
+		/**
+		 * the last reporting timestamp
+		 */
+		private long lastReportedTime = 0;
 
 		private Exception bgExp = null;
 
@@ -271,7 +327,6 @@ public class WebImageView extends ImageView {
 				final int lp = values[0];
 
 				imageView.internImgLoadListener.onLoading(imageView, lp);
-
 			}
 		}
 
@@ -293,15 +348,16 @@ public class WebImageView extends ImageView {
 						@Override
 						public void reportProgress(long progress) {
 
-							if (lastp == progress)
+							if (lastReportedProgress == progress)
 								return;
 
 							long ctime = System.currentTimeMillis();
 
-							if (ctime - lastTime > 100 && progress - lastp > 0) {
+							if (ctime - lastReportedTime > 100
+									&& progress - lastReportedProgress > 0) {
 
-								lastp = progress;
-								lastTime = ctime;
+								lastReportedProgress = progress;
+								lastReportedTime = ctime;
 
 								RetrieveImageTask.this.publishProgress((int) progress);
 							}
@@ -337,34 +393,49 @@ public class WebImageView extends ImageView {
 					LogUtils.w(this, "onPostExecute miss ref to imageView");
 				}
 
-				imageView.disconnectImageTask();
+				imageView.disconnectWebImageTask();
 			}
 
 			this.clearRef();
 		}
 	};
 
+	/**
+	 * Listen for web image loading
+	 * 
+	 */
 	public interface WebImageProgressListener {
 
-		public void onStart(final WebImageView v);
+		/**
+		 * Web image start loading
+		 * 
+		 * @param view
+		 */
+		public void onStart(final WebImageView view);
 
 		/**
 		 * Web image loading
 		 * 
-		 * @param v
+		 * @param view
 		 * @param progress
 		 *            0~100
 		 */
-		public void onLoading(final WebImageView v, final int progress);
+		public void onLoading(final WebImageView view, final int progress);
 
 		/**
 		 * Web image loaded
 		 * 
-		 * @param v
+		 * @param view
 		 */
-		public void onLoad(final WebImageView v);
+		public void onLoad(final WebImageView view);
 
-		public void onError(final WebImageView v, Exception e);
+		/**
+		 * Some error happened during loading
+		 * 
+		 * @param view
+		 * @param e
+		 */
+		public void onError(final WebImageView view, Exception e);
 
 	}
 

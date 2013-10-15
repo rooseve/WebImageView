@@ -2,6 +2,10 @@ package com.rsv.utils;
 
 import android.util.Log;
 
+/**
+ * Just a log wrapper
+ * 
+ */
 public class LogUtils {
 	public static void w(Object obj, String msg) {
 		w(getTag(obj), msg);

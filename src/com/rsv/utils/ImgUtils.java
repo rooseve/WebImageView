@@ -8,16 +8,13 @@ import android.graphics.BitmapFactory.Options;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 
-public class ImgUtils
-{
-	public static int[] getImageSizeScaleTo(final ImageView imageView)
-	{
+public class ImgUtils {
+	public static int[] getImageSizeScaleTo(final ImageView imageView) {
 		int width = -1;
 		int height = -1;
 
 		// Check maxWidth and maxHeight parameters
-		try
-		{
+		try {
 			Field maxWidthField = ImageView.class.getDeclaredField("mMaxWidth");
 			Field maxHeightField = ImageView.class.getDeclaredField("mMaxHeight");
 			maxWidthField.setAccessible(true);
@@ -25,30 +22,24 @@ public class ImgUtils
 			int maxWidth = (Integer) maxWidthField.get(imageView);
 			int maxHeight = (Integer) maxHeightField.get(imageView);
 
-			if (maxWidth >= 0 && maxWidth < Integer.MAX_VALUE)
-			{
+			if (maxWidth >= 0 && maxWidth < Integer.MAX_VALUE) {
 				width = maxWidth;
 			}
-			if (maxHeight >= 0 && maxHeight < Integer.MAX_VALUE)
-			{
+			if (maxHeight >= 0 && maxHeight < Integer.MAX_VALUE) {
 				height = maxHeight;
 			}
-		}
-		catch (Exception e)
-		{
+		} catch (Exception e) {
 			LogUtils.logException(e);
 		}
 
-		if (width < 0 && height < 0)
-		{
+		if (width < 0 && height < 0) {
 			// Get layout width and height parameters
 			LayoutParams params = imageView.getLayoutParams();
 			width = params.width;
 			height = params.height;
 		}
 
-		if (width < 0 && height < 0)
-		{
+		if (width < 0 && height < 0) {
 
 		}
 
@@ -56,36 +47,30 @@ public class ImgUtils
 	}
 
 	public static int computeImageScale(final InputStream imageStream, int width, int height,
-			boolean fastway)
-	{
+			boolean fastway) {
 		Options options = new Options();
 		options.inJustDecodeBounds = true;
 		BitmapFactory.decodeStream(imageStream, null, options);
 
 		int scale = 1;
 
-		if (fastway)
-		{
+		if (fastway) {
 			// Find the correct scale value. It should be the power of 2.
 			int width_tmp = options.outWidth;
 			int height_tmp = options.outHeight;
 
-			while (true)
-			{
+			while (true) {
 				if (width_tmp / 2 < width || height_tmp / 2 < height)
 					break;
 				width_tmp /= 2;
 				height_tmp /= 2;
 				scale *= 2;
 			}
-		}
-		else
-		{
+		} else {
 			int widthScale = (int) (Math.floor(((double) options.outWidth) / width));
 			int heightScale = (int) (Math.floor(((double) options.outHeight) / height));
 			int minScale = Math.min(widthScale, heightScale);
-			if (minScale > 1)
-			{
+			if (minScale > 1) {
 				scale = minScale;
 			}
 		}

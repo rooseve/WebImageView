@@ -9,13 +9,13 @@ import java.util.Map;
 
 abstract class BaseMemCache<K, V>
 {
-	private final Map<K, Reference<V>> softMap = Collections
+	private final Map<K, Reference<V>> cacheMap = Collections
 			.synchronizedMap(new HashMap<K, Reference<V>>());
 
 	public V get(K key)
 	{
 		V result = null;
-		Reference<V> reference = softMap.get(key);
+		Reference<V> reference = cacheMap.get(key);
 		if (reference != null)
 		{
 			result = reference.get();
@@ -25,7 +25,7 @@ abstract class BaseMemCache<K, V>
 
 	public boolean put(K key, V value)
 	{
-		softMap.put(key, createReference(value));
+		cacheMap.put(key, createReference(value));
 		return true;
 	}
 
@@ -36,17 +36,17 @@ abstract class BaseMemCache<K, V>
 
 	public void remove(K key)
 	{
-		softMap.remove(key);
+		cacheMap.remove(key);
 	}
 
 	public Collection<K> keys()
 	{
-		return softMap.keySet();
+		return cacheMap.keySet();
 	}
 
 	public void clear()
 	{
-		softMap.clear();
+		cacheMap.clear();
 	}
 
 	protected Reference<V> createReference(V value)

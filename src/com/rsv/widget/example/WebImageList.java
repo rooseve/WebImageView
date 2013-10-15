@@ -5,9 +5,11 @@ import java.util.Random;
 import android.app.Activity;
 import android.os.Bundle;
 import android.widget.ListView;
+import android.widget.TextView;
 
-import com.rsv.comp.ImageLoader;
 import com.rsv.widget.R;
+import com.rsv.widget.WebImageView;
+import com.rsv.widget.WebImageView.WebImageProgressListener;
 
 public class WebImageList extends Activity {
 
@@ -18,17 +20,7 @@ public class WebImageList extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.imglist);
 
-		try {
-			//ImageLoader imageLoader = ImageLoader.getImageLoader(this.getApplicationContext());
-			//imageLoader.clearFilecache();
-
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
 		setUp();
-
 	}
 
 	private void setUp() {
@@ -45,6 +37,35 @@ public class WebImageList extends Activity {
 		ItemAdapter adapter = new ItemAdapter(this, R.layout.imgitem, urls);
 
 		listView.setAdapter(adapter);
+
+		WebImageView timg = (WebImageView) this.findViewById(R.id.titleImage);
+		final TextView txt = (TextView) this.findViewById(R.id.titleTxt);
+
+		timg.setWebImageProgressListener(new WebImageProgressListener() {
+
+			@Override
+			public void onStart(WebImageView view) {
+
+				txt.setText("start....");
+			}
+
+			@Override
+			public void onLoading(WebImageView view, int progress) {
+				txt.setText("load " + progress + "%");
+			}
+
+			@Override
+			public void onLoad(WebImageView view) {
+				txt.setText("load done");
+
+			}
+
+			@Override
+			public void onError(WebImageView view, Exception e) {
+				txt.setText("Error");
+
+			}
+		});
 	}
 
 	@SuppressWarnings("unused")

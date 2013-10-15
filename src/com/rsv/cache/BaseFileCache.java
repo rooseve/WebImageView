@@ -5,11 +5,17 @@ import java.io.File;
 import com.rsv.utils.FileUtils;
 
 abstract class BaseFileCache {
-	protected File cacheDir;
 
-	public BaseFileCache(File cacheDir) {
+	protected final File cacheDir;
+
+	public BaseFileCache(final File cacheDir) {
+
 		if (!cacheDir.exists()) {
 			throw new IllegalArgumentException(cacheDir + " not exists");
+		}
+
+		if (!cacheDir.canWrite()) {
+			throw new IllegalArgumentException(cacheDir + " not writable");
 		}
 
 		this.cacheDir = cacheDir;
@@ -34,9 +40,15 @@ abstract class BaseFileCache {
 		return tFile;
 	}
 
+	/**
+	 * delete the file
+	 * 
+	 * @param key
+	 */
 	public void remove(String key) {
 
 		File file = this.get(key);
+
 		if (file != null) {
 			file.delete();
 		}
@@ -61,6 +73,9 @@ abstract class BaseFileCache {
 		return file;
 	}
 
+	/**
+	 * Remote all files in this cacheDir
+	 */
 	public void clear() {
 
 		File[] files = cacheDir.listFiles();

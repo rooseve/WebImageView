@@ -27,8 +27,7 @@ public final class StorageUtils {
 		return getFreeSpace(getExternalDir("").toString());
 	}
 
-	public static File getExternalCacheDirectory(String packageName,
-			String dirName) {
+	public static File getExternalCacheDirectory(String packageName, String dirName) {
 		File cacheDir = getExternalCacheDir(packageName);
 
 		File individualCacheDir = new File(cacheDir, dirName);
@@ -42,16 +41,14 @@ public final class StorageUtils {
 	}
 
 	public static boolean isExternalStorageWritable() {
-		return Environment.getExternalStorageState().equals(
-				Environment.MEDIA_MOUNTED);
+		return Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
 	}
 
 	public static boolean isExternalStorageReadable() {
 		if (isExternalStorageWritable()) {
 			return true;
 		}
-		return Environment.getExternalStorageState().equals(
-				Environment.MEDIA_MOUNTED_READ_ONLY);
+		return Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED_READ_ONLY);
 	}
 
 	/**
@@ -63,8 +60,7 @@ public final class StorageUtils {
 	 * @return
 	 */
 	public static File getExternalFilesDir(final String packageName) {
-		return getExternalDirAllApiLevels(packageName,
-				EXT_STORAGE_FILES_PATH_SUFFIX);
+		return getExternalDirAllApiLevels(packageName, EXT_STORAGE_FILES_PATH_SUFFIX);
 	}
 
 	/**
@@ -76,18 +72,16 @@ public final class StorageUtils {
 	 * @return
 	 */
 	public static File getExternalCacheDir(final String packageName) {
-		return getExternalDirAllApiLevels(packageName,
-				EXT_STORAGE_CACHE_PATH_SUFFIX);
+		return getExternalDirAllApiLevels(packageName, EXT_STORAGE_CACHE_PATH_SUFFIX);
 	}
 
 	public static File getExternalDir(final String packageName) {
 		return getExternalDirAllApiLevels(packageName, "");
 	}
 
-	private static File getExternalDirAllApiLevels(final String packageName,
-			final String suffixType) {
-		File baseDir = new File(Environment.getExternalStorageDirectory()
-				+ EXT_STORAGE_PATH_PREFIX + packageName);
+	private static File getExternalDirAllApiLevels(final String packageName, final String suffixType) {
+		File baseDir = new File(Environment.getExternalStorageDirectory() + EXT_STORAGE_PATH_PREFIX
+				+ packageName);
 
 		if (!baseDir.exists()) {
 			synchronized (FileUtils.DATA_LOCK) {

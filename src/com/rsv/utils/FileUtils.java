@@ -62,8 +62,7 @@ public final class FileUtils {
 	 * @param file
 	 * @return
 	 */
-	public static boolean writeStringAsFile(final String fileContents,
-			final File file) {
+	public static boolean writeStringAsFile(final String fileContents, final File file) {
 		boolean result = false;
 		try {
 			synchronized (DATA_LOCK) {
@@ -88,15 +87,13 @@ public final class FileUtils {
 	 * @param file
 	 * @return
 	 */
-	public static boolean appendStringToFile(final String appendContents,
-			final File file) {
+	public static boolean appendStringToFile(final String appendContents, final File file) {
 		boolean result = false;
 		try {
 			synchronized (DATA_LOCK) {
 				if ((file != null) && file.canWrite()) {
 					file.createNewFile(); // ok if returns false, overwrite
-					Writer out = new BufferedWriter(new FileWriter(file, true),
-							1024);
+					Writer out = new BufferedWriter(new FileWriter(file, true), 1024);
 					out.write(appendContents);
 					out.close();
 					result = true;
@@ -121,8 +118,7 @@ public final class FileUtils {
 				if ((file != null) && file.canRead()) {
 					sb = new StringBuilder();
 					String line = null;
-					BufferedReader in = new BufferedReader(
-							new FileReader(file), 1024);
+					BufferedReader in = new BufferedReader(new FileReader(file), 1024);
 					while ((line = in.readLine()) != null) {
 						sb.append(line + System.getProperty("line.separator"));
 					}

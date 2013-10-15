@@ -53,7 +53,7 @@ public class ItemAdapter extends ArrayAdapter<String> {
 
 		textView.setText(".");
 
-		wImageView.setImgLoadListener(new WebImageProgressListener() {
+		wImageView.setWebImageProgressListener(new WebImageProgressListener() {
 
 			@Override
 			public void onLoading(WebImageView v, final int progress) {
@@ -82,7 +82,7 @@ public class ItemAdapter extends ArrayAdapter<String> {
 			}
 		});
 
-		wImageView.setPlaceholder(R.drawable.wimg_placeholder);
+		wImageView.setWebImagePlaceholder(R.drawable.wimg_placeholder);
 		wImageView.setWebImageUrl(this.urls[position]);
 
 		return rowView;

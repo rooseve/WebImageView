@@ -6,10 +6,17 @@
     android:orientation="vertical" >
 
     <com.rsv.widget.WebImageView
-        android:layout_width="100dp"
+        android:id="@+id/titleImage"
+        android:layout_width="fill_parent"
         android:layout_height="80dp"
         android:layout_marginLeft="9dp"
-        app:webImageUrl="https://www.google.com/images/srpr/logo11w.png" />
+        android:src="@drawable/ic_launcher"
+        app:webImageUrl="http://d34wpjv4rf3nwa.cloudfront.net/www1/wp-content/uploads/2012/01/android-survey.gif" />
+
+    <TextView
+        android:id="@+id/titleTxt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
     <ListView
         android:id="@+id/listView"

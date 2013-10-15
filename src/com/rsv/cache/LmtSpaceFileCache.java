@@ -23,10 +23,10 @@ public class LmtSpaceFileCache extends BaseFileCache {
 	private final Map<File, Long> lastUsageDates = Collections
 			.synchronizedMap(new HashMap<File, Long>());
 
-	public LmtSpaceFileCache(File cacheDir, int sizeLimit) {
+	public LmtSpaceFileCache(File cacheDir, int spaceLimit) {
 		super(cacheDir);
 
-		setSpaceLimit((int) Math.min(sizeLimit,
+		setSpaceLimit((int) Math.min(spaceLimit,
 				StorageUtils.getFreeSpace(cacheDir.getAbsolutePath())));
 
 		LogUtils.d(this, "size limit: " + this.spaceLimit);
