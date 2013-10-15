@@ -26,6 +26,4 @@ public class Constants {
 	public static final String DefaultUseragentForImageLoader = "Mozilla/5.0 (compatible; RsvWebImageView)";
 
 	public static final String DefaultWebImgCacheDir = "rsv_webimg_cache";
-
-	public static final String DefaultWebImageCacheStorage = "external";
 }

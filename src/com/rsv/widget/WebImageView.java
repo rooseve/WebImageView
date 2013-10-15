@@ -157,8 +157,9 @@ public class WebImageView extends ImageView {
 	private void fillPlaceholder() {
 		if (webImagePlaceholder != null) {
 			setImageDrawable(webImagePlaceholder);
+
 		} else {
-			setImageResource(android.R.color.transparent);
+			// setImageResource(android.R.color.transparent);
 		}
 	}
 
@@ -176,6 +177,9 @@ public class WebImageView extends ImageView {
 	 * @param url
 	 */
 	public void setWebImageUrl(final String url) {
+
+		if (this.webImageUrl == null && url == null)
+			return;
 
 		if (url != null && url.equals(this.webImageUrl)) {
 
