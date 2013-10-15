@@ -12,6 +12,16 @@ Android ImageView which can load image data from an url.
 
 ###How to use?
 
+####Add WebImageView as a Library.
+
+Eclipse for example:
+
+- Import this project. 
+- Make WebImageView a Library project: right click the WebImageView project name, select **Android** in the left properties list, and on the right panel, check **Is Library**
+- Add it to other projects: still right click the project name and find the Android property panel, this time, click the add button, which will show a project list, just select the WebImageView project.
+
+Or copy **webimageview.jar** in the WebImageView's **bin** folder, to the **libs** folder of projects where needs WebImageView.
+
 #### In Xml layout
 
 	<?xml version="1.0" encoding="utf-8"?>
