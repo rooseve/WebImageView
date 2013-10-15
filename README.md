@@ -126,9 +126,11 @@ Create a file named **com.rsv.webimageview.config.properties** in the **assets**
 
 - How long will an image be expired?
 	
-	The answer is **Never** for right now. We think accessing network should be as few as possible, so images will be cached in the **webImageCacheDir** and only be removed when the space occupied exceeds **webImageCacheSpaceInMB**. 
+	The answer is **Never** for right now. I think accessing network should be as few as possible, so images will be cached in the **webImageCacheDir** and only be removed when the space occupied in MB exceeds  the value of **webImageCacheSpaceInMB**. 
 
-	But if an image does expire very often, then you can add some **get** parameter to the url, which make it looks like another image. For example:
+	But if an image does expire very often, you chould handle it like this:
+
+	Append some **get** parameter to the end of the image url, which make it looks like another image. For example:
 
 		http://www.android.com/images/logo.png
 
@@ -136,14 +138,12 @@ Create a file named **com.rsv.webimageview.config.properties** in the **assets**
 	
 		http://www.android.com/images/logo.png?t=timestamp
 
-	are the same image, but with differtnt urls they will be treated as different web images.
+	are the same image, but will be treated as different web images as with differtnt urls .
 
 
 - Image size and ImageView size.
 
-	The real image might be 300*300px, but the ImageView might just just 100px*100px, so it's will be thumbnailed.
+	WebImageView extends ImageView, and it only cares how to load to url efficiently, and let the ImageView to handle the scale problem.
 
-	WebImageView extends ImageView, and it only cares how to load to url efficiently. So if the image is very very large, the cache will still cache this very very big one, and let the ImageView to handle the scale problem.
-
-	So for performance reasons, it's recommended to make the image size just fit in the ImageView.
+	For example, the real image might be 300px * 300px, but the ImageView size might just be 100px * 100px. WebImageView's cache system does cache the 300 * 300 image, but it's still to be scaled in time when displayed, which consumes the cpu. So for performance reasons, it's recommended to make the image size just fit in the ImageView.
 
