@@ -18,7 +18,7 @@ Eclipse for example:
 
 - Import this project. 
 - Make WebImageView a Library project: right click the WebImageView project name, select **Android** in the left properties list, and on the right panel, check **Is Library**
-- Add it to other projects: still right click the project name and find the Android property panel, this time, click the add button, which will show a project list, just select the WebImageView project.
+- Add it to other projects: still right click the project name which needs WebImageView, find the Android property panel, and this time, click the Add button in the Library part, which will show a project list, just select the WebImageView project.
 
 Or copy **webimageview.jar** in the WebImageView's **bin** folder, to the **libs** folder of projects where needs WebImageView.
 
@@ -41,7 +41,10 @@ Or copy **webimageview.jar** in the WebImageView's **bin** folder, to the **libs
 The key parts are:
 
 -  xmlns:app="http://schemas.android.com/apk/res-auto"
+-  <com.rsv.widget.WebImageView
 -  app:webImageUrl="[the image url]" 
+
+The others are just normal ImageView stuff.
 
 You might got an error like this:
  
