@@ -3,6 +3,8 @@ WebImageView
 
 Android ImageView which can load image data from an url.
 
+![WebImageViewList](docs/images/snap.png)
+
 ###Features
 
 - **Http/Https** url supported
@@ -10,7 +12,7 @@ Android ImageView which can load image data from an url.
 - Build-in **memory/file cache**, access network as few as possible.
 - **Progress update** supported, very easy to implement progress bar or something similar.
 - **Placeholder** image supported.
-- Works in **ListView** perfectly.
+- Works perfectly with **ListView** .
 
 ###How to use?
 

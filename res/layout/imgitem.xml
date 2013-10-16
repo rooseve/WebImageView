@@ -24,4 +24,13 @@
         android:layout_marginLeft="66dp"
         android:gravity="center_vertical" />
 
+    <ProgressBar
+        android:id="@+id/progressBarHz"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true" />
+
 </RelativeLayout>

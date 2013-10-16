@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.rsv.widget.R;
@@ -35,11 +36,11 @@ public class ItemAdapter extends ArrayAdapter<String> {
 		if (convertView != null) {
 			rowView = convertView;
 
-			//LogUtils.i(this, "convertView" + position);
+			// LogUtils.i(this, "convertView" + position);
 
 		} else {
 
-			//LogUtils.i(this, "InflateView" + position);
+			// LogUtils.i(this, "InflateView" + position);
 
 			LayoutInflater inflater = (LayoutInflater) context
 					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -48,6 +49,8 @@ public class ItemAdapter extends ArrayAdapter<String> {
 		}
 
 		WebImageView wImageView = (WebImageView) rowView.findViewById(R.id.imageView);
+
+		final ProgressBar pbar = (ProgressBar) rowView.findViewById(R.id.progressBarHz);
 
 		final TextView textView = (TextView) rowView.findViewById(R.id.textView);
 
@@ -59,6 +62,8 @@ public class ItemAdapter extends ArrayAdapter<String> {
 			public void onLoading(WebImageView v, final int progress) {
 
 				textView.setText(progress + "%");
+
+				pbar.setProgress(progress);
 
 			}
 
@@ -73,6 +78,8 @@ public class ItemAdapter extends ArrayAdapter<String> {
 			@Override
 			public void onStart(WebImageView v) {
 				textView.setText("...");
+
+				pbar.setProgress(0);
 			}
 
 			@Override

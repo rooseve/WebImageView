@@ -53,7 +53,7 @@ public class LogUtils {
 	}
 
 	private static String getTag(Object obj) {
-		return getTag(obj.getClass().getSimpleName());
+		return (obj != null ? obj.getClass().getSimpleName() : "");
 	}
 
 	private static String getTag(String tag) {

@@ -20,8 +20,8 @@ public class LmtSpaceFileCache extends BaseFileCache {
 
 	private int spaceLimit;
 
-	private final Map<File, Long> lastUsageDates = Collections
-			.synchronizedMap(new HashMap<File, Long>());
+	private final Map<String, Long> lastUsageDates = Collections
+			.synchronizedMap(new HashMap<String, Long>());
 
 	public LmtSpaceFileCache(File cacheDir, int spaceLimit) {
 		super(cacheDir);
@@ -49,7 +49,7 @@ public class LmtSpaceFileCache extends BaseFileCache {
 		for (File cachedFile : cachedFiles) {
 			size += getSize(cachedFile);
 
-			lastUsageDates.put(cachedFile, cachedFile.lastModified());
+			lastUsageDates.put(cachedFile.getAbsolutePath(), cachedFile.lastModified());
 		}
 		cachedSpace = size;
 
@@ -74,16 +74,17 @@ public class LmtSpaceFileCache extends BaseFileCache {
 
 		Long currentTime = System.currentTimeMillis();
 		// file.setLastModified(currentTime);
-		lastUsageDates.put(file, currentTime);
+		lastUsageDates.put(file.getAbsolutePath(), currentTime);
 
 		return file;
 	}
 
-	private synchronized void freeCache(int reqSize) {
+	private synchronized void freeCache(int reqiredExtraSize) {
 		int tSize = (int) Math.max(Math.ceil(spaceLimit * 0.8), spaceLimit - 1024 * 1024);
 
-		while (cachedSpace + reqSize > tSize) {
+		while (cachedSpace + reqiredExtraSize > tSize) {
 			int freedSize = removeNext();
+
 			if (freedSize == 0)
 				break; // cache is empty (have nothing to delete)
 
@@ -100,7 +101,7 @@ public class LmtSpaceFileCache extends BaseFileCache {
 		if (file != null) {
 			Long currentTime = System.currentTimeMillis();
 			// file.setLastModified(currentTime);
-			lastUsageDates.put(file, currentTime);
+			lastUsageDates.put(file.getAbsolutePath(), currentTime);
 		}
 
 		return file;
@@ -134,38 +135,49 @@ public class LmtSpaceFileCache extends BaseFileCache {
 		}
 
 		Long oldestUsage = null;
-		File mostLongUsedFile = null;
-		Set<Entry<File, Long>> entries = lastUsageDates.entrySet();
 
-		for (Entry<File, Long> entry : entries) {
+		String mostLongUsedFilePath = null;
 
-			if (mostLongUsedFile == null) {
+		Set<Entry<String, Long>> entries = lastUsageDates.entrySet();
 
-				mostLongUsedFile = entry.getKey();
+		for (Entry<String, Long> entry : entries) {
+
+			if (mostLongUsedFilePath == null) {
+
+				mostLongUsedFilePath = entry.getKey();
 				oldestUsage = entry.getValue();
 
 			} else {
+
 				Long lastValueUsage = entry.getValue();
 
 				if (lastValueUsage < oldestUsage) {
 					oldestUsage = lastValueUsage;
-					mostLongUsedFile = entry.getKey();
+					mostLongUsedFilePath = entry.getKey();
 				}
 			}
 		}
 
-		if (mostLongUsedFile != null && !mostLongUsedFile.exists()) {
-			lastUsageDates.remove(mostLongUsedFile);
-			return 1;
+		if (mostLongUsedFilePath != null) {
+
+			lastUsageDates.remove(mostLongUsedFilePath);
+
+			File mostLongUsedFile = new File(mostLongUsedFilePath);
+
+			if (!mostLongUsedFile.exists()) {
+				return 1;
+			}
+
+			int fileSize = getSize(mostLongUsedFile);
+
+			if (mostLongUsedFile.delete()) {
+				LogUtils.i(this, "remove " + mostLongUsedFile.getName());
+			}
+
+			return fileSize;
 		}
 
-		int fileSize = getSize(mostLongUsedFile);
-
-		if (mostLongUsedFile.delete()) {
-			LogUtils.i(this, "remove " + mostLongUsedFile.getName());
-			lastUsageDates.remove(mostLongUsedFile);
-		}
-		return fileSize;
+		return 1;
 	}
 
 	protected int getSize(File file) {
