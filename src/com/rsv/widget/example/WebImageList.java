@@ -29,7 +29,7 @@ public class WebImageList extends Activity {
 		String[] urls = new String[20];
 
 		for (int i = 0; i < urls.length; i++) {
-			urls[i] = String.format(baseUrl + "?t=" + getRandomInt(1, 2), i % 10);
+			urls[i] = String.format(baseUrl + "?t=" + getRandomInt(1, 5), i % 10);
 		}
 
 		ListView listView = (ListView) findViewById(R.id.listView);

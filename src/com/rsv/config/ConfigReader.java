@@ -30,15 +30,21 @@ public class ConfigReader {
 
 	}
 
-	public static int getImageCacheSpaceInMB(final Context context) {
+	public static double getImageCacheSpaceInMB(final Context context) {
 
-		int size = getPropInt(context, Constants.PropWebImageCacheSpaceInMB);
-		return size > 0 ? size : 50;
+		double spaceInMB = getPropDouble(context, Constants.PropWebImageCacheSpaceInMB);
+		return spaceInMB > 0 ? spaceInMB : 50;
+	}
+
+	public static int getImageMemorySizeLimit(final Context context) {
+
+		int size = getPropInt(context, Constants.PropWebImageMemorySizeLimit);
+		return size >= 0 ? size : 20;
 	}
 
 	public static String getImageCacheDir(final Context context) {
 
-		String dir = getPropString(context, Constants.PropWebImgCacheDir);
+		String dir = getPropString(context, Constants.PropWebImageCacheDir);
 
 		return dir != null ? dir : Constants.DefaultWebImgCacheDir;
 	}
@@ -54,6 +60,12 @@ public class ConfigReader {
 
 		String v = getPropString(context, key);
 		return v != null ? Integer.parseInt(v) : 0;
+	}
+
+	private static double getPropDouble(final Context context, final String key) {
+
+		String v = getPropString(context, key);
+		return v != null ? Double.parseDouble(v) : 0;
 	}
 
 	private static String getPropString(final Context context, final String key) {

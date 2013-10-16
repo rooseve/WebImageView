@@ -17,7 +17,9 @@ public class Constants {
 
 	public static final String PropWebImageCacheStorage = "webImageCacheStorage";
 
-	public static final String PropWebImgCacheDir = "webImageCacheDir";
+	public static final String PropWebImageCacheDir = "webImageCacheDir";
+	
+	public static final String PropWebImageMemorySizeLimit = "webImageMemorySizeLimit";
 
 	/**
 	 * Default prop values

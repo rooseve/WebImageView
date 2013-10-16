@@ -308,7 +308,8 @@ public class WebImageView extends ImageView {
 			this.clearRef();
 
 			if (this.getStatus() == Status.PENDING || !this.isCancelled()) {
-				LogUtils.i(this, "cancel RetrieveImageTask");
+
+				// LogUtils.i(this, "cancel RetrieveImageTask");
 				this.cancel(false);
 			}
 		}
@@ -370,8 +371,9 @@ public class WebImageView extends ImageView {
 					});
 
 				} catch (Exception e) {
-					bgExp = e;
+					LogUtils.logException(e);
 
+					bgExp = e;
 					return null;
 				}
 

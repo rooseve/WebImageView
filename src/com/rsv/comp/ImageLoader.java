@@ -81,20 +81,24 @@ public class ImageLoader {
 
 	private ImageLoader(final Context context, final String dir) {
 
-		int cacheSpace = ConfigReader.getImageCacheSpaceInMB(context);
+		double cacheSpaceInMB = ConfigReader.getImageCacheSpaceInMB(context);
 
-		fileCache = new LmtSpaceFileCache(new File(dir), cacheSpace * 1024 * 1024);
-
-		memCache = new LmtSizeMemCache<Bitmap>(10);
+		int memorySizeLimit = ConfigReader.getImageMemorySizeLimit(context);
 
 		this.userAgent = ConfigReader.getUseragentForImageLoader(context);
 
-		LogUtils.i(this, String.format("ImageLoader: size:%dMB, dir: %s, useragent:%s", cacheSpace,
-				dir, this.userAgent));
+		this.fileCache = new LmtSpaceFileCache(new File(dir), (int) (cacheSpaceInMB * 1024 * 1024));
+
+		this.memCache = new LmtSizeMemCache<Bitmap>(memorySizeLimit);
+
+		LogUtils.i(this, String.format(
+				"ImageLoader: memsize:%d, filespace:%fMB, dir: %s, useragent:%s", memorySizeLimit,
+				cacheSpaceInMB, dir, this.userAgent));
 	}
 
 	private Bitmap loadImgFromMem(String url) {
 		Bitmap bm = memCache != null ? memCache.get(url) : null;
+
 		if (bm != null) {
 			LogUtils.i(this, "memcache got: " + url);
 		}
@@ -106,7 +110,8 @@ public class ImageLoader {
 	 * Clear from memory
 	 */
 	public void clearMemcache() {
-		this.memCache.clear();
+		if (this.memCache != null)
+			this.memCache.clear();
 	}
 
 	/**

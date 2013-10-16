@@ -5,10 +5,12 @@ Android ImageView which can load image data from an url.
 
 ###Features
 
-- **http/https** url supported
+- **Http/Https** url supported
 - Load in **background** and **concurrently**, won't break the main UI thread.
 - Build-in **memory/file cache**, access network as few as possible.
-- **Progress update** supported, very easy to implement progress bar or something similar
+- **Progress update** supported, very easy to implement progress bar or something similar.
+- **Placeholder** image supported.
+- Works in **ListView** perfectly.
 
 ###How to use?
 
@@ -119,6 +121,10 @@ Create a file named **com.rsv.webimageview.config.properties** in the **assets**
 	#the cache space limit in MB, default 50
 	webImageCacheSpaceInMB=50
 	
+	#how many web images could be kept in memory as cache
+	#we use SoftReference to cache the image, if memory is too low, the space will be recycled anyway, so do not worry too much.
+	webImageMemorySizeLimit=30
+
 	#the useragent to fetch the image url
 	useragentForImageLoader=Mozilla/5.0 (compatible; RsvWebImageView)	
 
