@@ -8,7 +8,9 @@
         android:minSdkVersion="8"
         android:targetSdkVersion="18" />
 
+    <!-- to download images -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- to cache the images -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
 </manifest>

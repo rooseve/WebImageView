@@ -17,8 +17,9 @@ Android ImageView which loads image from an url.
 	![WebImageViewList](docs/images/snap.png)
 
 
-
 ###How to use?
+
+> Reference [these examples](https://github.com/rooseve/WebImageViewExample) for more details.
 
 ####Add WebImageView as a Library.
 
@@ -30,7 +31,12 @@ Eclipse for example:
 
 Or copy **webimageview.jar** in the WebImageView's **bin** folder, to the **libs** folder of projects where needs WebImageView.
 
-> Reference [these examples](https://github.com/rooseve/WebImageViewExample) for more details.
+####Modify AndroidManifest.xml, add internet and storage permissions.
+
+	<!-- to download images -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- to cache the images -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
 #### In Xml layout
 
