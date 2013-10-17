@@ -1,6 +1,4 @@
 /.classpath
 /.settings
+/bin
 /gen
-/bin/res
-/bin/classes
-/bin/dexedLibs

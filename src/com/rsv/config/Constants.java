@@ -25,7 +25,7 @@ public class Constants {
 	 * Default prop values
 	 */
 
-	public static final String DefaultUseragentForImageLoader = "Mozilla/5.0 (compatible; RsvWebImageView)";
+	public static final String DefaultUseragentForImageLoader = "Mozilla/5.0 (compatible; WebImageView/1.0; +https://github.com/rooseve/WebImageView)";
 
 	public static final String DefaultWebImgCacheDir = "rsv_webimg_cache";
 }

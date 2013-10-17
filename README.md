@@ -1,9 +1,9 @@
 WebImageView
 ============
 
-Android ImageView which can load image data from an url.
+Android ImageView which loads image from an url. 
 
-![WebImageViewList](docs/images/snap.png)
+**[Examples here](https://github.com/rooseve/WebImageViewExample).**
 
 ###Features
 
@@ -13,6 +13,10 @@ Android ImageView which can load image data from an url.
 - **Progress update** supported, very easy to implement progress bar or something similar.
 - **Placeholder** image supported.
 - Works perfectly with **ListView** .
+	
+	![WebImageViewList](docs/images/snap.png)
+
+
 
 ###How to use?
 
@@ -26,6 +30,8 @@ Eclipse for example:
 
 Or copy **webimageview.jar** in the WebImageView's **bin** folder, to the **libs** folder of projects where needs WebImageView.
 
+> Reference [these examples](https://github.com/rooseve/WebImageViewExample) for more details.
+
 #### In Xml layout
 
 	<?xml version="1.0" encoding="utf-8"?>
@@ -38,7 +44,7 @@ Or copy **webimageview.jar** in the WebImageView's **bin** folder, to the **libs
 	    <com.rsv.widget.WebImageView
 	        android:layout_width="fill_parent"
 	        android:layout_height="80dp"
-	        app:webImageUrl="[the image url]" />
+	        app:webImageUrl="[the image url, string OR @string/string_id]" />
 	
 	</LinearLayout>
 
@@ -123,7 +129,7 @@ Create a file named **com.rsv.webimageview.config.properties** in the **assets**
 	#the cache space limit in MB, default 50
 	webImageCacheSpaceInMB=50
 	
-	#how many web images could be kept in memory as cache
+	#how many web images could be kept in memory as cache, default 20
 	#we use SoftReference to cache the image, if memory is too low, the space will be recycled anyway, so do not worry too much.
 	webImageMemorySizeLimit=30
 

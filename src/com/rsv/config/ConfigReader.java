@@ -39,6 +39,7 @@ public class ConfigReader {
 	public static int getImageMemorySizeLimit(final Context context) {
 
 		int size = getPropInt(context, Constants.PropWebImageMemorySizeLimit);
+
 		return size >= 0 ? size : 20;
 	}
 
@@ -59,13 +60,14 @@ public class ConfigReader {
 	private static int getPropInt(final Context context, final String key) {
 
 		String v = getPropString(context, key);
-		return v != null ? Integer.parseInt(v) : 0;
+		return v != null ? Integer.parseInt(v) : -1;
 	}
 
 	private static double getPropDouble(final Context context, final String key) {
 
 		String v = getPropString(context, key);
-		return v != null ? Double.parseDouble(v) : 0;
+
+		return v != null ? Double.parseDouble(v) : -1;
 	}
 
 	private static String getPropString(final Context context, final String key) {
