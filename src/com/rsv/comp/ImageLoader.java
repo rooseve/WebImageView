@@ -133,19 +133,21 @@ public class ImageLoader {
 	public Bitmap downloadImg(final String url, final IProgressListener downloadProgressListener)
 			throws IOException {
 
-		Bitmap bm = this.loadImgFromMem(url);
+		Bitmap bm = this.tryGetFromMem(url, downloadProgressListener);
 
-		if (bm != null) {
-			if (downloadProgressListener != null)
-				downloadProgressListener.reportProgress(100);
+		if (bm != null)
 			return bm;
-		}
-
-		File file = null;
 
 		synchronized (url.intern()) {
 
-			file = fileCache.get(url);
+			// try again
+			bm = this.tryGetFromMem(url, downloadProgressListener);
+
+			if (bm != null)
+				return bm;
+
+			// get the file
+			File file = fileCache.get(url);
 
 			if (file == null) {
 
@@ -161,36 +163,56 @@ public class ImageLoader {
 			} else {
 				LogUtils.i(this, "filecache got: " + url);
 			}
-		}
 
-		if (file != null && file.exists()) {
+			if (file != null && file.exists()) {
 
-			FileInputStream is = null;
+				FileInputStream is = null;
 
-			try {
-				is = new FileInputStream(file);
+				try {
+					is = new FileInputStream(file);
 
-				bm = BitmapFactory.decodeStream(is);
+					bm = BitmapFactory.decodeStream(is);
 
-			} catch (FileNotFoundException e) {
-				LogUtils.logException(e);
+				} catch (FileNotFoundException e) {
+					LogUtils.logException(e);
 
-				throw e;
+					throw e;
 
-			} finally {
-				if (is != null) {
-					try {
-						is.close();
-					} catch (IOException e) {
-						LogUtils.logException(e);
+				} finally {
+					if (is != null) {
+						try {
+							is.close();
+						} catch (IOException e) {
+							LogUtils.logException(e);
+						}
 					}
 				}
 			}
+
+			if (bm != null) {
+				if (memCache != null)
+					memCache.put(url, bm);
+			}
 		}
 
+		return bm;
+	}
+
+	/**
+	 * Try get the image data from memory
+	 * 
+	 * @param url
+	 * @param downloadProgressListener
+	 * @return
+	 */
+	public Bitmap tryGetFromMem(final String url, final IProgressListener downloadProgressListener) {
+
+		Bitmap bm = this.loadImgFromMem(url);
+
 		if (bm != null) {
-			if (memCache != null)
-				memCache.put(url, bm);
+			if (downloadProgressListener != null)
+				downloadProgressListener.reportProgress(100);
+			return bm;
 		}
 
 		return bm;

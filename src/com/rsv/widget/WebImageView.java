@@ -116,7 +116,11 @@ public class WebImageView extends ImageView {
 				"webImageUrl");
 
 		if (url != null) {
-			this.setWebImageUrl(url);
+
+			if (url.charAt(0) == '@') {
+				this.setWebImageUrl(Integer.parseInt(url.substring(1)));
+			} else
+				this.setWebImageUrl(url);
 		}
 	}
 
@@ -169,6 +173,10 @@ public class WebImageView extends ImageView {
 	 */
 	public String getWebImageUrl() {
 		return this.webImageUrl;
+	}
+
+	public void setWebImageUrl(int resourceId) {
+		this.setWebImageUrl(getResources().getString(resourceId));
 	}
 
 	/**

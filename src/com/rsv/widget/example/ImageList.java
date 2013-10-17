@@ -5,13 +5,10 @@ import java.util.Random;
 import android.app.Activity;
 import android.os.Bundle;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.rsv.widget.R;
-import com.rsv.widget.WebImageView;
-import com.rsv.widget.WebImageView.WebImageProgressListener;
 
-public class WebImageList extends Activity {
+public class ImageList extends Activity {
 
 	private static Random random = new Random();
 
@@ -24,6 +21,7 @@ public class WebImageList extends Activity {
 	}
 
 	private void setUp() {
+		
 		String baseUrl = "http://www.kidsmathgamesonline.com/images/pictures/numbers600/number%d.jpg";
 
 		String[] urls = new String[20];
@@ -38,34 +36,6 @@ public class WebImageList extends Activity {
 
 		listView.setAdapter(adapter);
 
-		WebImageView timg = (WebImageView) this.findViewById(R.id.titleImage);
-		final TextView txt = (TextView) this.findViewById(R.id.titleTxt);
-
-		timg.setWebImageProgressListener(new WebImageProgressListener() {
-
-			@Override
-			public void onStart(WebImageView view) {
-
-				txt.setText("start....");
-			}
-
-			@Override
-			public void onLoading(WebImageView view, int progress) {
-				txt.setText("load " + progress + "%");
-			}
-
-			@Override
-			public void onLoad(WebImageView view) {
-				txt.setText("load done");
-
-			}
-
-			@Override
-			public void onError(WebImageView view, Exception e) {
-				txt.setText("Error");
-
-			}
-		});
 	}
 
 	@SuppressWarnings("unused")

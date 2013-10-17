@@ -5,9 +5,15 @@
     android:layout_height="fill_parent"
     android:orientation="vertical" >
 
-    <ListView
-        android:id="@+id/listView"
-        android:layout_width="wrap_content"
+    <com.rsv.widget.WebImageView
+        android:id="@+id/webImage"
+        android:layout_width="fill_parent"
+        android:layout_height="100dp" />
+
+    <ProgressBar
+        android:id="@+id/progressBarHz"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
 </LinearLayout>
