@@ -4,7 +4,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.http.client.ClientProtocolException;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -24,7 +28,11 @@ import com.rsv.utils.StorageUtils;
  */
 public class ImageLoader {
 
-	private static final HashMap<Context, ImageLoader> pool = new HashMap<Context, ImageLoader>();
+	private static final Map<Context, ImageLoader> pool = Collections
+			.synchronizedMap(new HashMap<Context, ImageLoader>());
+
+	private static final Map<String, Object> imgUrlLock = Collections
+			.synchronizedMap(new HashMap<String, Object>());
 
 	private final LmtSpaceFileCache fileCache;
 
@@ -138,61 +146,100 @@ public class ImageLoader {
 		if (bm != null)
 			return bm;
 
-		synchronized (url.intern()) {
+		Object urlLock = getUrlLock(url);
 
-			// try again
-			bm = this.tryGetFromMem(url, downloadProgressListener);
+		synchronized (urlLock) {
 
-			if (bm != null)
-				return bm;
+			try {
+				bm = this.doFetchImage(url, downloadProgressListener);
 
-			// get the file
-			File file = fileCache.get(url);
+			} finally {
 
-			if (file == null) {
+				removeUrlLock(url);
+			}
+		}
 
-				file = fileCache.getTargetFile(url);
+		return bm;
+	}
 
-				if (HttpClientUtils.downloadToFile(url, file, this.userAgent,
-						downloadProgressListener)) {
+	private static void removeUrlLock(String url) {
+		imgUrlLock.remove(url);
+	}
 
-					fileCache.put(url, file);
+	private static synchronized Object getUrlLock(String url) {
 
-				}
+		if (imgUrlLock.containsKey(url))
+			return imgUrlLock.get(url);
 
-			} else {
-				LogUtils.i(this, "filecache got: " + url);
+		Object lock = new Object();
+
+		imgUrlLock.put(url, lock);
+
+		return lock;
+	}
+
+	/**
+	 * Get the image from file cache or just download
+	 * 
+	 * @param url
+	 * @param downloadProgressListener
+	 * @return
+	 * @throws ClientProtocolException
+	 * @throws IOException
+	 */
+	private Bitmap doFetchImage(final String url, final IProgressListener downloadProgressListener)
+			throws ClientProtocolException, IOException {
+
+		Bitmap bm = this.tryGetFromMem(url, downloadProgressListener);
+
+		if (bm != null)
+			return bm;
+
+		// get the file
+		File file = fileCache.get(url);
+
+		if (file == null) {
+
+			file = fileCache.getTargetFile(url);
+
+			if (HttpClientUtils.downloadToFile(url, file, this.userAgent, downloadProgressListener)) {
+
+				fileCache.put(url, file);
+
 			}
 
-			if (file != null && file.exists()) {
+		} else {
+			LogUtils.i(this, "filecache got: " + url);
+		}
 
-				FileInputStream is = null;
+		if (file != null && file.exists()) {
 
-				try {
-					is = new FileInputStream(file);
+			FileInputStream is = null;
 
-					bm = BitmapFactory.decodeStream(is);
+			try {
+				is = new FileInputStream(file);
 
-				} catch (FileNotFoundException e) {
-					LogUtils.logException(e);
+				bm = BitmapFactory.decodeStream(is);
 
-					throw e;
+			} catch (FileNotFoundException e) {
+				LogUtils.logException(e);
 
-				} finally {
-					if (is != null) {
-						try {
-							is.close();
-						} catch (IOException e) {
-							LogUtils.logException(e);
-						}
+				throw e;
+
+			} finally {
+				if (is != null) {
+					try {
+						is.close();
+					} catch (IOException e) {
+						LogUtils.logException(e);
 					}
 				}
 			}
+		}
 
-			if (bm != null) {
-				if (memCache != null)
-					memCache.put(url, bm);
-			}
+		if (bm != null) {
+			if (memCache != null)
+				memCache.put(url, bm);
 		}
 
 		return bm;
