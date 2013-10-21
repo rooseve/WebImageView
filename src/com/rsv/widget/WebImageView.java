@@ -4,6 +4,7 @@ import java.lang.ref.WeakReference;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -37,6 +38,11 @@ public class WebImageView extends ImageView {
 	 * The loading progress, 0~100
 	 */
 	private long progress = -1;
+
+	/**
+	 * The time span to expire, in seconds
+	 */
+	private long expireInSecs = -1;
 
 	/**
 	 * The outer side listener
@@ -112,16 +118,26 @@ public class WebImageView extends ImageView {
 		if (attrs == null)
 			return;
 
-		String url = attrs.getAttributeValue("http://schemas.android.com/apk/res-auto",
-				"webImageUrl");
+		TypedArray ts = context.obtainStyledAttributes(attrs, R.styleable.WebImageView);
 
-		if (url != null) {
+		{
+			String url = ts.getString(R.styleable.WebImageView_webImageUrl);
 
-			if (url.charAt(0) == '@') {
-				this.setWebImageUrl(Integer.parseInt(url.substring(1)));
-			} else
+			if (url != null) {
+
 				this.setWebImageUrl(url);
+			}
 		}
+		{
+			int expire = ts.getInt(R.styleable.WebImageView_webImageExpireInSecs, -1);
+
+			if (expire >= 0) {
+
+				this.setWebImageExpireInSecs(expire);
+			}
+		}
+
+		ts.recycle();
 	}
 
 	/**
@@ -245,6 +261,27 @@ public class WebImageView extends ImageView {
 	}
 
 	/**
+	 * Set an expire time(in seconds), default -1
+	 * 
+	 * when >0, memory cache will be disabled.
+	 * 
+	 * @param secs
+	 *            0 means no cache; <0 means never expired;
+	 */
+	public void setWebImageExpireInSecs(long secs) {
+		this.expireInSecs = secs < 0 ? -1 : secs;
+	}
+
+	/**
+	 * Get the expire time in secs
+	 * 
+	 * @return
+	 */
+	public long getWebImageExpireInSecs() {
+		return this.expireInSecs;
+	}
+
+	/**
 	 * Web image data got
 	 * 
 	 * @param bm
@@ -356,27 +393,28 @@ public class WebImageView extends ImageView {
 
 					ImageLoader imgLoader = ImageLoader.getImageLoader(imageView.getContext());
 
-					return imgLoader.downloadImg(imageView.webImageUrl, new IProgressListener() {
+					return imgLoader.downloadImg(imageView.webImageUrl, imageView.expireInSecs,
+							new IProgressListener() {
 
-						@Override
-						public void reportProgress(long progress) {
+								@Override
+								public void reportProgress(long progress) {
 
-							if (lastReportedProgress == progress)
-								return;
+									if (lastReportedProgress == progress)
+										return;
 
-							long ctime = System.currentTimeMillis();
+									long ctime = System.currentTimeMillis();
 
-							if (ctime - lastReportedTime > 100
-									&& progress - lastReportedProgress > 0) {
+									if (ctime - lastReportedTime > 100
+											&& progress - lastReportedProgress > 0) {
 
-								lastReportedProgress = progress;
-								lastReportedTime = ctime;
+										lastReportedProgress = progress;
+										lastReportedTime = ctime;
 
-								RetrieveImageTask.this.publishProgress((int) progress);
-							}
+										RetrieveImageTask.this.publishProgress((int) progress);
+									}
 
-						}
-					});
+								}
+							});
 
 				} catch (Exception e) {
 					LogUtils.logException(e);

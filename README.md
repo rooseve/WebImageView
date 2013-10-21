@@ -146,7 +146,7 @@ Create a file named **com.rsv.webimageview.config.properties** in the **assets**
 
 - How long will an image be expired?
 	
-	The answer is **Never** for right now. I think accessing network should be as few as possible, so images will be cached in the **webImageCacheDir** and only be removed when the space occupied in MB exceeds  the value of **webImageCacheSpaceInMB**. 
+	The short answer is **Never** for right now. I think accessing network should be as few as possible, so images will be cached in the **webImageCacheDir** and only be removed when the space occupied in MB exceeds  the value of **webImageCacheSpaceInMB**. 
 
 	But if an image does expire very often, you chould handle it like this:
 
@@ -158,7 +158,13 @@ Create a file named **com.rsv.webimageview.config.properties** in the **assets**
 	
 		http://www.android.com/images/logo.png?t=timestamp
 
-	are the same image, but will be treated as different web images as with differtnt urls .
+	are the same image, but will be treated as different web images as with differtnt urls.
+
+	But if you do know how long the image will expired, there's a method:
+
+		setWebImageExpireInSecs
+
+	The expire time will be -1 by default, means never expired, and file/memory cache will be used. 0 means always to fetch the image via network, and no cache used. If set to be >0, memory cache will disabled, just file cache works.
 
 
 - Image size and ImageView size.

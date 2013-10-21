@@ -2,7 +2,8 @@
 <resources>
 
     <declare-styleable name="WebImageView">
-        <attr name="webImageUrl" format="string" />
+        <attr name="webImageUrl" format="reference|string" />
+        <attr name="webImageExpireInSecs" format="reference|integer" />
     </declare-styleable>
 
 </resources>

@@ -138,10 +138,12 @@ public class ImageLoader {
 	 * @return
 	 * @throws IOException
 	 */
-	public Bitmap downloadImg(final String url, final IProgressListener downloadProgressListener)
-			throws IOException {
+	public Bitmap downloadImg(final String url, long expireInSecs,
+			final IProgressListener downloadProgressListener) throws IOException {
 
-		Bitmap bm = this.tryGetFromMem(url, downloadProgressListener);
+		Bitmap bm;
+
+		bm = this.tryGetFromMem(url, expireInSecs, downloadProgressListener);
 
 		if (bm != null)
 			return bm;
@@ -151,7 +153,8 @@ public class ImageLoader {
 		synchronized (urlLock) {
 
 			try {
-				bm = this.doFetchImage(url, downloadProgressListener);
+
+				bm = this.doFetchImage(url, expireInSecs, downloadProgressListener);
 
 			} finally {
 
@@ -187,16 +190,28 @@ public class ImageLoader {
 	 * @throws ClientProtocolException
 	 * @throws IOException
 	 */
-	private Bitmap doFetchImage(final String url, final IProgressListener downloadProgressListener)
-			throws ClientProtocolException, IOException {
+	private Bitmap doFetchImage(final String url, long expireInSecs,
+			final IProgressListener downloadProgressListener) throws ClientProtocolException,
+			IOException {
 
-		Bitmap bm = this.tryGetFromMem(url, downloadProgressListener);
+		Bitmap bm = this.tryGetFromMem(url, expireInSecs, downloadProgressListener);
 
 		if (bm != null)
 			return bm;
 
 		// get the file
 		File file = fileCache.get(url);
+
+		if (file != null) {
+
+			if (expireInSecs >= 0
+					&& System.currentTimeMillis() - file.lastModified() > expireInSecs * 1000) {
+
+				LogUtils.i(this, "file expired: " + url);
+
+				file = null;
+			}
+		}
 
 		if (file == null) {
 
@@ -238,8 +253,13 @@ public class ImageLoader {
 		}
 
 		if (bm != null) {
-			if (memCache != null)
-				memCache.put(url, bm);
+			if (memCache != null) {
+
+				// only cache the one never expired
+				if (expireInSecs < 0) {
+					memCache.put(url, bm);
+				}
+			}
 		}
 
 		return bm;
@@ -252,13 +272,20 @@ public class ImageLoader {
 	 * @param downloadProgressListener
 	 * @return
 	 */
-	public Bitmap tryGetFromMem(final String url, final IProgressListener downloadProgressListener) {
+	public Bitmap tryGetFromMem(final String url, long expireInSecs,
+			final IProgressListener downloadProgressListener) {
+
+		// no mem cache if expireInSecs set
+		if (expireInSecs >= 0)
+			return null;
 
 		Bitmap bm = this.loadImgFromMem(url);
 
 		if (bm != null) {
+
 			if (downloadProgressListener != null)
 				downloadProgressListener.reportProgress(100);
+
 			return bm;
 		}
 
