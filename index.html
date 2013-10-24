@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <title>Webimageview by rooseve</title>
+  </head>
+
+  <body>
+    <header>
+      <div class="inner">
+        <h1>Webimageview</h1>
+        <h2>ImageView for Android which loads image data from an url.</h2>
+        <a href="https://github.com/rooseve/WebImageView" class="button"><small>View project on</small>GitHub</a>
+      </div>
+    </header>
+
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+          <h1>
+<a name="webimageview" class="anchor" href="#webimageview"><span class="octicon octicon-link"></span></a>WebImageView</h1>
+
+<p>Android ImageView which loads image from an url. </p>
+
+<p><strong><a href="https://github.com/rooseve/WebImageViewExample">Examples here</a>.</strong></p>
+
+<h3>
+<a name="features" class="anchor" href="#features"><span class="octicon octicon-link"></span></a>Features</h3>
+
+<ul>
+<li>
+<strong>Http/Https</strong> url supported</li>
+<li>Load in <strong>background</strong> and <strong>concurrently</strong>, won't break the main UI thread.</li>
+<li>Build-in <strong>memory/file cache</strong>, access network as few as possible.</li>
+<li>
+<strong>Progress update</strong> supported, very easy to implement progress bar or something similar.</li>
+<li>
+<strong>Placeholder</strong> image supported.</li>
+<li>
+<p>Works perfectly with <strong>ListView</strong> .</p>
+
+<p><img src="https://raw.github.com/rooseve/WebImageView/master/docs/images/snap.png" alt="WebImageViewList"></p>
+</li>
+</ul><h3>
+<a name="how-to-use" class="anchor" href="#how-to-use"><span class="octicon octicon-link"></span></a>How to use?</h3>
+
+<blockquote>
+<p>Reference <a href="https://github.com/rooseve/WebImageViewExample">these examples</a> for more details.</p>
+</blockquote>
+
+<h4>
+<a name="add-webimageview-as-a-library" class="anchor" href="#add-webimageview-as-a-library"><span class="octicon octicon-link"></span></a>Add WebImageView as a Library.</h4>
+
+<p>Eclipse for example:</p>
+
+<ul>
+<li>Import this project. </li>
+<li>Make WebImageView a Library project: right click the WebImageView project name, select <strong>Android</strong> in the left properties list, and on the right panel, check <strong>Is Library</strong>
+</li>
+<li>Add it to other projects: still right click the project name which needs WebImageView, find the Android property panel, and this time, click the Add button in the Library part, which will show a project list, just select the WebImageView project.</li>
+</ul><p>Or copy <strong>webimageview.jar</strong> in the WebImageView's <strong>bin</strong> folder, to the <strong>libs</strong> folder of projects where needs WebImageView.</p>
+
+<h4>
+<a name="modify-androidmanifestxml-add-internet-and-storage-permissions" class="anchor" href="#modify-androidmanifestxml-add-internet-and-storage-permissions"><span class="octicon octicon-link"></span></a>Modify AndroidManifest.xml, add internet and storage permissions.</h4>
+
+<pre><code>&lt;!-- to download images --&gt;
+&lt;uses-permission android:name="android.permission.INTERNET" /&gt;
+&lt;!-- to cache the images --&gt;
+&lt;uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /&gt;
+</code></pre>
+
+<h4>
+<a name="in-xml-layout" class="anchor" href="#in-xml-layout"><span class="octicon octicon-link"></span></a>In Xml layout</h4>
+
+<pre><code>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" &gt;
+
+    &lt;com.rsv.widget.WebImageView
+        android:layout_width="fill_parent"
+        android:layout_height="80dp"
+        app:webImageUrl="[the image url, string OR @string/string_id]" /&gt;
+
+&lt;/LinearLayout&gt;
+</code></pre>
+
+<p>The key parts are:</p>
+
+<ul>
+<li> xmlns:app="<a href="http://schemas.android.com/apk/res-auto">http://schemas.android.com/apk/res-auto</a>"</li>
+<li> &lt;com.rsv.widget.WebImageView</li>
+<li> app:webImageUrl="[the image url]" </li>
+</ul><p>The others are just normal ImageView stuff.</p>
+
+<p>You might got an error like this:</p>
+
+<blockquote>
+<p>No resource identifier found for attribute 'webImageUrl' in package 'com.rsv.widget'</p>
+</blockquote>
+
+<p>Just add attr.xml in the res/values folder, and fill in such content:</p>
+
+<pre><code>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;resources&gt;
+
+    &lt;declare-styleable name="WebImageView"&gt;
+        &lt;attr name="webImageUrl" format="string" /&gt;
+    &lt;/declare-styleable&gt;
+
+&lt;/resources&gt;
+</code></pre>
+
+<h4>
+<a name="in-java-program" class="anchor" href="#in-java-program"><span class="octicon octicon-link"></span></a>In Java program</h4>
+
+<pre><code>WebImageView webImage = (WebImageView) this.findViewById(R.id.webImage);
+</code></pre>
+
+<p>With a WebImageView instance, you can:</p>
+
+<ul>
+<li>
+<p>Set the image url</p>
+
+<pre><code>webImage.setWebImageUrl(url);
+</code></pre>
+</li>
+<li>
+<p>Set the placeholder</p>
+
+<pre><code>webImage.setWebImagePlaceholder(Drawable/Bitmap/resouceId)
+</code></pre>
+</li>
+<li>
+<p>Set the progress listener</p>
+
+<pre><code>webImage.setWebImageProgressListener(new WebImageProgressListener() {
+
+        @Override
+        public void onStart(WebImageView view) {
+            //start loading image
+        }
+
+        @Override
+        public void onLoading(WebImageView view, int progress) {
+            //loading progess(0~100) 
+        }
+
+        @Override
+        public void onLoad(WebImageView view) {
+            //Finish loading
+        }
+
+        @Override
+        public void onError(WebImageView view, Exception e) {
+            //Something wrong
+        }
+    });
+</code></pre>
+</li>
+</ul><h3>
+<a name="configuration" class="anchor" href="#configuration"><span class="octicon octicon-link"></span></a>Configuration</h3>
+
+<p>There're some parameters which can be configured in the properties file.</p>
+
+<p>Create a file named <strong>com.rsv.webimageview.config.properties</strong> in the <strong>assets</strong> folder.</p>
+
+<pre><code>#the cache directory name, default: rsv_webimg_cache
+webImageCacheDir=rsv_webimg_cache
+
+#storage location
+#   1: external(default)
+#   2: for interval
+webImageCacheStorage=1
+
+#the cache space limit in MB, default 50
+webImageCacheSpaceInMB=50
+
+#how many web images could be kept in memory as cache, default 20
+#we use SoftReference to cache the image, if memory is too low, the space will be recycled anyway, so do not worry too much.
+webImageMemorySizeLimit=30
+
+#the useragent to fetch the image url
+useragentForImageLoader=Mozilla/5.0 (compatible; RsvWebImageView)   
+</code></pre>
+
+<h3>
+<a name="faq" class="anchor" href="#faq"><span class="octicon octicon-link"></span></a>FAQ</h3>
+
+<ul>
+<li>
+<p>How long will an image be expired?</p>
+
+<p>The short answer is <strong>Never</strong> for right now. I think accessing network should be as few as possible, so images will be cached in the <strong>webImageCacheDir</strong> and only be removed when the space occupied in MB exceeds  the value of <strong>webImageCacheSpaceInMB</strong>. </p>
+
+<p>But if an image does expire very often, you chould handle it like this:</p>
+
+<p>Append some <strong>get</strong> parameter to the end of the image url, which make it looks like another image. For example:</p>
+
+<pre><code>http://www.android.com/images/logo.png
+</code></pre>
+
+<p>And</p>
+
+<pre><code>http://www.android.com/images/logo.png?t=timestamp
+</code></pre>
+
+<p>are the same image, but will be treated as different web images as with differtnt urls.</p>
+
+<p>But if you do know how long the image will expired, there's a method:</p>
+
+<pre><code>setWebImageExpireInSecs
+</code></pre>
+
+<p>The expire time will be -1 by default, means never expired, and file/memory cache will be used. 0 means always to fetch the image via network, and no cache used. If set to be &gt;0, memory cache will disabled, just file cache works.</p>
+</li>
+<li>
+<p>Image size and ImageView size.</p>
+
+<p>WebImageView extends ImageView, and it only cares how to load to url efficiently, and let the ImageView to handle the scale problem.</p>
+
+<p>For example, the real image might be 300px * 300px, but the ImageView size might just be 100px * 100px. WebImageView's cache system does cache the 300 * 300 image, but it's still to be scaled in time when displayed, which consumes the cpu. So for performance reasons, it's recommended to make the image size just fit in the ImageView.</p>
+</li>
+</ul>
+        </section>
+
+        <aside id="sidebar">
+          <a href="https://github.com/rooseve/WebImageView/zipball/master" class="button">
+            <small>Download</small>
+            .zip file
+          </a>
+          <a href="https://github.com/rooseve/WebImageView/tarball/master" class="button">
+            <small>Download</small>
+            .tar.gz file
+          </a>
+
+          <p class="repo-owner"><a href="https://github.com/rooseve/WebImageView"></a> is maintained by <a href="https://github.com/rooseve">rooseve</a>.</p>
+
+          <p>This page was generated by <a href="pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
+        </aside>
+      </div>
+    </div>
+
+  
+  </body>
+</html>
