@@ -14,7 +14,7 @@ Android ImageView which loads image from an url.
 - **Placeholder** image supported.
 - Works perfectly with **ListView** .
 	
-	![WebImageViewList](docs/images/snap.png)
+	![WebImageViewList](https://raw.github.com/rooseve/WebImageView/master/docs/images/snap.png)
 
 
 ###How to use?
